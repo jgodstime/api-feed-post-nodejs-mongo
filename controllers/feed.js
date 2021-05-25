@@ -8,11 +8,18 @@ const User = require('../models/user');
 exports.getPosts = async (req, res, next) => {
     const currentPage = req.query.page || 1;
     const perPage = 2;
-    
-    const totalItems = await Post.find().countDocuments();
-    const posts = await Post.find().skip((currentPage - 1) * perPage).limit(perPage);
+    try {
+        const totalItems = await Post.find().countDocuments();
+        const posts = await Post.find().skip((currentPage - 1) * perPage).limit(perPage);
 
-    res.status(200).json({message: 'Fetched posts successfully', posts: posts}); 
+        res.status(200).json({message: 'Fetched posts successfully', posts: posts}); 
+    } catch (err) {
+        if(!err.statusCode){
+            err.statusCode = 500;
+        }
+        next(err);
+    }
+    
  
 };
 
