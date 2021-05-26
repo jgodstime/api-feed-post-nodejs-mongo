@@ -6,8 +6,11 @@ const path = require('path');
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
+const socket = require('./socket');
 
 const app = express();
+const httpServer = require("http").createServer(app);
+
 
 // upload image
 
@@ -60,7 +63,14 @@ app.use((error, req, res, next) => {
 
 mongoose.connect('mongodb://localhost/messages')
 .then(result => {
-    app.listen(8000);
+    const io = require('./socket').init(httpServer);
+    io.on('connection', socket => {
+      console.log('Client conection');
+    });
+
+    httpServer.listen(8080)
+
+
 })
 .catch(err => console.log())
 
